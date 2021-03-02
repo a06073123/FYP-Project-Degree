@@ -14,4 +14,4 @@ The corn futures download from [Yahoo Finance](https://finance.yahoo.com/quote/Z
 | Make the data usable | 50% |
 | init github repo and the markdown | 100% |
 | UML | 20% |
-| Coding | 20% |
+| Coding | 50% |

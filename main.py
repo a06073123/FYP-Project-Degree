@@ -6,9 +6,12 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, SimpleRNN
 import matplotlib.pyplot as plt
+import sys
 
-df = pd.read_csv("./corn-futures-data/dataset1y.csv",
-                 encoding='UTF-8', low_memory=False)
+file = str(sys.argv[1])
+path = "./corn-futures-data/{}.csv".format(file)
+
+df = pd.read_csv(path, encoding='UTF-8', low_memory=False)
 # # Create a new dataframe with only the 'Close' column
 data = df.filter(['Close'])
 # Converting the dataframe to a numpy array
@@ -33,7 +36,7 @@ for i in range(front, len(train_data)):
 x_train, y_train = np.array(x_train), np.array(y_train)
 
 batch_size = 1
-epochs = 10
+epochs = 20
 
 # SLR model
 model_SLR = Sequential()
