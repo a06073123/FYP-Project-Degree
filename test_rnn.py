@@ -6,16 +6,24 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, SimpleRNN
 import matplotlib.pyplot as plt
+import json
 
-df = pd.read_csv("./corn-futures-data/dataset1y.csv",
-                 encoding='UTF-8', low_memory=False)
+
+with open('setting.json') as f:
+    setting = json.load(f)
+
+path = setting["path"]
+
+df = pd.read_csv(path, encoding='UTF-8', low_memory=False)
 # # Create a new dataframe with only the 'Close' column
 data = df.filter(['Close'])
 # Converting the dataframe to a numpy array
 dataset = data.values
 
 # Get /Compute the number of rows to train the model on
-training_data_len = math.ceil(len(dataset) * .7)
+training_rate = setting["training_rate"]
+training_data_len = math.ceil(len(dataset) * training_rate)
+front = len(dataset) - training_data_len
 # Scale the all of the data to be values between 0 and 1
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
@@ -24,8 +32,8 @@ train_data = scaled_data[0:training_data_len, :]
 # Split the data into x_train and y_train data sets
 x_train = []
 y_train = []
-for i in range(75, len(train_data)):
-    x_train.append(train_data[i-75:i, 0])
+for i in range(front, len(train_data)):
+    x_train.append(train_data[i-front:i, 0])
     y_train.append(train_data[i, 0])
 # Convert x_train and y_train to numpy arrays
 x_train, y_train = np.array(x_train), np.array(y_train)
@@ -42,35 +50,39 @@ model.add(Dense(units=1))
 # Compile the model
 model.compile(optimizer='adam', loss='mean_squared_error')
 
+epochs = setting["epochs"]
 # Train the model
-model.fit(x_train, y_train, batch_size=1, epochs=4)
+model.fit(x_train, y_train, batch_size=1, epochs=epochs)
 # Test data set
-test_data = scaled_data[training_data_len - 75:, :]
+test_data = scaled_data[training_data_len - front:, :]
 # Create the x_test and y_test data sets
 x_test = []
-# Get all of the rows from index 17503 to the rest and all of the columns (in this case it's only column 'Close'), so 2003 - 17503 = 400 rows of data
+# Get all of the rows from index 137303 to the rest and all of the columns (in this case it's only column 'Close'), so 2003 - 137303 = 400 rows of data
 y_test = dataset[training_data_len:, :]
-for i in range(75, len(test_data)):
-    x_test.append(test_data[i-75:i, 0])
+for i in range(front, len(test_data)):
+    x_test.append(test_data[i-front:i, 0])
 # Convert x_test to a numpy array
 x_test = np.array(x_test)
 # Reshape the data into the shape accepted by the LSTM
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-# Getting the models predicted Close values
+# Getting the models predicted MinPrice values
 predictions = model.predict(x_test)
 predictions = scaler.inverse_transform(predictions)  # Undo scaling
-valid['RNN'] = predictions
-
+# Calculate/Get the value of RMSE
+rmse = np.sqrt(np.mean(((predictions - y_test)**2)))
+# Plot/Create the data for the graph
+train = data[:training_data_len]
+valid = data[training_data_len:]
+valid['Predictions'] = predictions
 # Visualize the data
 plt.figure(figsize=(16, 8))
-plt.title('Model')
+plt.title('RNN')
 plt.xlabel('Date', fontsize=18)
 plt.ylabel('Close', fontsize=18)
 plt.plot(train['Close'])
-plt.plot(valid[['Close', 'RNN']])
-plt.legend(['Train', 'Val', 'RNN'], loc='lower right')
+plt.plot(valid[['Close', 'Predictions']])
+plt.legend(['Train', 'Val', 'Predictions'], loc='lower right')
 plt.show()
 
-# Calculate/Get the value of RMSE
 rmse = np.sqrt(np.mean(((predictions - y_test)**2)))
-print(rmse)
+print(f"\nRMSE(RNN):{rmse}")

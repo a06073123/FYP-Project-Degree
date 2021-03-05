@@ -6,10 +6,13 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, SimpleRNN
 import matplotlib.pyplot as plt
-import sys
+import json
 
-file = str(sys.argv[1])
-path = "./corn-futures-data/{}.csv".format(file)
+
+with open('setting.json') as f:
+    setting = json.load(f)
+
+path = setting["path"]
 
 df = pd.read_csv(path, encoding='UTF-8', low_memory=False)
 # # Create a new dataframe with only the 'Close' column
@@ -18,9 +21,10 @@ data = df.filter(['Close'])
 dataset = data.values
 
 # Get /Compute the number of rows to train the model on
-training_data_len = math.ceil(len(dataset) * .7)
+training_rate = setting["training_rate"]
+training_data_len = math.ceil(len(dataset) * training_rate)
 front = len(dataset) - training_data_len
-print(front)
+
 # Scale the all of the data to be values between 0 and 1
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
@@ -36,7 +40,7 @@ for i in range(front, len(train_data)):
 x_train, y_train = np.array(x_train), np.array(y_train)
 
 batch_size = 1
-epochs = 20
+epochs = setting["epochs"]
 
 # SLR model
 model_SLR = Sequential()
