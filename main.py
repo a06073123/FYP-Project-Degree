@@ -108,9 +108,9 @@ plt.figure(figsize=(16, 8))
 plt.title('LSTM vs RNN vs SLR on corn futures')
 plt.xlabel('Date', fontsize=18)
 plt.ylabel('Close', fontsize=18)
-plt.plot(train['Close'])
+# plt.plot(train['Close'])
 plt.plot(valid[['Close', 'LSTM', 'RNN', 'SLR']])
-plt.legend(['Train data', 'Actually data', 'Predictions(LSTM)',
+plt.legend(['Actually data', 'Predictions(LSTM)',
             'Predictions(RNN)', 'Predictions(SLR)'], loc='lower right')
 plt.show()
 
