@@ -1,5 +1,5 @@
 {
-    "path": "./corn-futures-data/dataset1y.csv",
+    "file": "corn_1y",
     "training_rate": 0.7,
     "epochs": 20
 }

@@ -12,7 +12,7 @@ import json
 with open('setting.json') as f:
     setting = json.load(f)
 
-path = setting["path"]
+path = "./dataset/{0}.csv".format(setting["file"])
 
 df = pd.read_csv(path, encoding='UTF-8', low_memory=False)
 # # Create a new dataframe with only the 'Close' column
