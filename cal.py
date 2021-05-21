@@ -10,7 +10,8 @@ dataset = pd.read_csv("./dataset/{0}.csv".format(setting["file"]))
 
 arr = []
 
-for i in range(100):
+runtime = setting['runtime']
+for i in range(runtime):
 
     if setting["file"] != "corn_3m":
         path = "./result/{0}/{1}-{2}-{3}.csv".format(
@@ -26,12 +27,12 @@ close = arr[0]["Close"]
 lstm = arr[0]["LSTM"]
 rnn = arr[0]["RNN"]
 slr = arr[0]["SLR"]
-for i in range(1, 100):
+for i in range(1, runtime):
     lstm += arr[i]["LSTM"]
     rnn += arr[i]["RNN"]
     slr += arr[i]["SLR"]
 
-length = 100
+
 start = len(dataset)-len(close)
 
 # process the data
@@ -39,9 +40,9 @@ export = pd.DataFrame()
 pd.options.display.float_format = "{:.2f}".format
 export["Date"] = dataset[start:]["Date"].values
 export["Close"] = close
-export["LSTM"] = lstm/length
-export["RNN"] = rnn/length
-export["SLR"] = slr/length
+export["LSTM"] = lstm/runtime
+export["RNN"] = rnn/runtime
+export["SLR"] = slr/runtime
 print(export)
 # plot the figure
 plt.figure(figsize=(16, 8))

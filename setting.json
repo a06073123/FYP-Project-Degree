@@ -1,5 +1,6 @@
 {
-    "file": "corn_3m",
+    "file": "bdo_3m",
     "training_rate": 0.7,
-    "epochs": 80
+    "epochs": 20,
+    "runtime": 5
 }

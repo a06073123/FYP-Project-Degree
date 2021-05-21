@@ -32,7 +32,7 @@ scaled_data = scaler.fit_transform(dataset)
 train_data = scaled_data[0:training_data_len, :]
 # Split the data into x_train and y_train data sets
 
-for x in range(100):
+for x in range(setting['runtime']):
 
     x_train = []
     y_train = []
